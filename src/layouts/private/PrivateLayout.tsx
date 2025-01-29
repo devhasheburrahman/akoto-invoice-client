@@ -1,38 +1,41 @@
-import React from 'react'
-import { Box, Paper } from '@mui/material'
-import { Outlet } from 'react-router-dom'
-import Appbar from './components/Appbar'
-import Sidebar from './components/Sidebar'
-import SettingsIcon from './components/icons/SettingsIcon'
-import InvoicesIcon from './components/icons/InvoicesIcon'
+import { Box, Paper } from "@mui/material";
+import { Outlet } from "react-router-dom";
+import Appbar from "./components/Appbar";
+import Sidebar from "./components/Sidebar";
 
-type ComponentProps = {
+type ComponentProps = {};
 
-}
-
-export default function PrivateLayout({ }: ComponentProps) {
+export default function PrivateLayout({}: ComponentProps) {
   return (
     <Box>
-      {/* Appbar start */}
+      {/* Appbar */}
       <Appbar />
-      {/* Appbar end */}
 
-      <Box className="flex">
-
-        {/* Sidebar start */}
-        <Paper className='w-[256px] min-h-screen'>
+      <Box sx={{ display: "flex" }}>
+        {/* Sidebar */}
+        <Paper
+          sx={{
+            width: 256,
+            minHeight: "100vh",
+            position: "sticky",
+            top: 0,
+          }}
+        >
           <Sidebar />
         </Paper>
-        {/* Sidebar end */}
 
-          {/* Content start */}
-          <Box className="flex-grow p-6">            
-            <Outlet/>                    
-          </Box>
-          {/* Content end */}
-
+        {/* Main content */}
+        <Box
+          sx={{
+            flexGrow: 1,
+            padding: 2,
+            overflowY: "auto",
+            height: "100vh",
+          }}
+        >
+          <Outlet />
+        </Box>
       </Box>
-
     </Box>
-  )
+  );
 }

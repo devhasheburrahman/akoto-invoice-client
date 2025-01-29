@@ -1,160 +1,309 @@
-import { Box, Button, Paper, Typography } from '@mui/material'
-import React, { useEffect, useState } from 'react'
-import InputField from '../../components/InputFields/InputField'
-import CartItem from './CartItem'
-import AddIcon from '@mui/icons-material/Add';
-import SaveIcon from '@mui/icons-material/Save';
-import PrintTest from './PrintTest';
+import { yupResolver } from "@hookform/resolvers/yup";
+import AddIcon from "@mui/icons-material/Add";
+import SaveIcon from "@mui/icons-material/Save";
+import {
+  Box,
+  Button,
+  Divider,
+  Grid,
+  Paper,
+  Typography,
+  useTheme,
+} from "@mui/material";
+import { toWords } from "number-to-words"; // Import the library
+import { useState } from "react";
+import { Controller, useForm } from "react-hook-form";
+import * as yup from "yup";
+import InputField from "../../components/InputFields/InputField";
+import CartItem from "./CartItem";
+import PrintTest from "./PrintTest";
+
+// Validation schema
+const validationSchema = yup.object().shape({
+  checkNo: yup.string(),
+  bankName: yup.string(),
+  address: yup.string(),
+  billTo: yup.string().required("Bill To is required"),
+  invoiceNumber: yup.string().required("Invoice Number is required"),
+  date: yup.date(),
+  invoiceNotes: yup.string(),
+});
 
 export default function AddInvoice() {
-  const [cartItems, setCartItems] = useState<Object[]>([{quantity:1, removed:false}])
+  const [cartItems, setCartItems] = useState<any[]>([
+    { item: "", price: 0, quantity: 1, description: "", removed: false },
+  ]);
   const [totalGrandAmount, setTotalGrandAmount] = useState(0);
-  const [paid, setPaid] = useState(0)
-  const [discount, setDiscount] = useState(0);
+  const theme = useTheme();
+  const totalInWords = toWords(totalGrandAmount);
 
-  // const handleAddItem = () => {
-  //   setCartItems([...cartItems, {item: 'Item Name', price: '1000', quantity: 100, description: '', discount: 0}])
-  // }
+  const {
+    handleSubmit,
+    control,
+    setValue,
+    formState: { errors },
+  } = useForm({
+    resolver: yupResolver(validationSchema),
+    defaultValues: {
+      bankName: "",
+      billTo: "",
+      invoiceNumber: "ABT1",
+      invoiceNotes: "Powered by Shohoj Software",
+    },
+  });
 
-  const handleSubmit = (e:React.FormEvent) => {
-    e.preventDefault();
-    setCartItems([...cartItems, {quantity:1, removed:false}])
-  }
+  const handleAddItem = () => {
+    setCartItems([
+      ...cartItems,
+      { item: "", price: 0, quantity: 1, description: "", removed: false },
+    ]);
+  };
+  const onSubmit = (data: any) => {
+    console.log({
+      ...data,
+      cartItems: cartItems,
+      totalGrandAmount: totalGrandAmount,
+      totalInWords: totalInWords,
+    });
+    
+    // console.log("Cart Items:", cartItems);
+    // console.log("Total Grand Amount:", totalGrandAmount);
+    // Logic to save the invoice
+  };
 
-  const handleFinalSubmit = (e:React.FormEvent) => {
-    e.preventDefault();
-  }
+  // Convert totalGrandAmount to words
 
-  const handlePaidChange = (e:React.ChangeEvent<HTMLInputElement>) => {
-    setPaid(parseInt(e.target.value))
-  }
-
-  const handleDiscountChange = (e:React.ChangeEvent<HTMLInputElement>) => {
-    setDiscount(parseInt(e.target.value))
-  }
-
-  useEffect(() => {}, [cartItems])
   return (
-    <form onSubmit={handleSubmit}>
-      <Typography variant="h6" component="div">New Invoice</Typography>
-      <Box className="grid grid-cols-4 gap-6 mt-5">
+    <form onSubmit={handleSubmit(onSubmit)}>
+      {/* Header Section */}
+      <Box
+        sx={{
+          background: `linear-gradient(45deg, ${theme.palette.primary.main}, ${theme.palette.secondary.main})`,
+          color: "#fff",
+          p: 3,
+          borderRadius: 2,
+          mb: 3,
+          textAlign: "center",
+        }}
+      >
+        <Typography variant="h4" sx={{ fontWeight: "bold" }}>
+          Akota Banasree Tower
+        </Typography>
+        <Typography variant="subtitle1">banasree, Dhaka</Typography>
+        <Typography variant="subtitle1" style={{ fontWeight: "bold" }}>
+          Payment Voucher
+        </Typography>
+      </Box>
 
-        {/* Content Section start */}
-        <Box className="col-span-3">
-          <Paper className='border-t-[4px] border-blue-500'>
-            <Box className="py-[18px] px-[20px]">
-
-              {/* 📦 Section 1 start */}
-              <Box className="grid grid-cols-5">
-                {/* Left */}
-                <Box className="col-span-2 flex flex-col gap-5">
-                  <InputField 
-                    label="Bill From"
-                    fullWidth
-                    defaultValue="Nimur Fishing Firm"
-                    required
+      <Grid container spacing={3}>
+        {/* Content Section */}
+        <Grid item xs={12} md={8}>
+          <Paper
+            elevation={3}
+            sx={{
+              p: 3,
+              borderRadius: 2,
+              background: "#f9f9f9",
+            }}
+          >
+            {/* Section 1: Invoice Details */}
+            <Grid container spacing={2}>
+              <Grid item xs={12} sm={6}>
+                <Controller
+                  name="billTo"
+                  control={control}
+                  render={({ field }) => (
+                    <InputField
+                      {...field}
+                      label="Bill To"
+                      fullWidth
+                      error={!!errors.billTo}
+                      helperText={errors.billTo?.message}
                     />
-                  <InputField 
-                    label="Bill To"
-                    fullWidth
-                    required
+                  )}
+                />
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <Controller
+                  name="checkNo"
+                  control={control}
+                  render={({ field }) => (
+                    <InputField {...field} label="Cash/Cheque No" fullWidth />
+                  )}
+                />
+              </Grid>
+
+              <Grid item xs={12} sm={6}>
+                <Controller
+                  name="address"
+                  control={control}
+                  render={({ field }) => (
+                    <InputField
+                      {...field}
+                      label="Address"
+                      fullWidth
+                      error={!!errors.address}
+                      helperText={errors.address?.message}
                     />
-                </Box>
-
-                {/* Meddle */}
-                <Box className="col-span-1">
-
-                </Box>
-
-                {/* Right */}
-                <Box className="col-span-2 flex flex-col gap-5">
-                  <InputField
+                  )}
+                />
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <Controller
+                  name="bankName"
+                  control={control}
+                  render={({ field }) => (
+                    <InputField
+                      {...field}
+                      label="Bank No"
+                      fullWidth
+                      error={!!errors.bankName}
+                      helperText={errors.bankName?.message}
+                    />
+                  )}
+                />
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <Controller
+                  name="invoiceNumber"
+                  control={control}
+                  render={({ field }) => (
+                    <InputField
+                      {...field}
                       label="Invoice Number"
                       fullWidth
-                      defaultValue="INV5AL1KSD"
-                      required
+                      error={!!errors.invoiceNumber}
+                      helperText={errors.invoiceNumber?.message}
                     />
-                  <InputField 
-                    label="Due Date"
+                  )}
+                />
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <Controller
+                  name="date"
+                  control={control}
+                  render={({ field }) => (
+                    <InputField
+                      defaultValue={`${new Date().getFullYear()}-${
+                        new Date().getMonth() + 1 < 10
+                          ? `0${new Date().getMonth() + 1}`
+                          : new Date().getMonth() + 1
+                      }-${new Date().getDate()}`}
+                      label="Date"
+                      {...field}
+                      fullWidth
+                      type="date"
+                      error={!!errors.date}
+                      helperText={errors.date?.message}
+                    />
+                  )}
+                />
+              </Grid>
+            </Grid>
+
+            {/* Section 2: Cart Items */}
+            <Box sx={{ mt: 3 }}>
+              {cartItems.map((cartItem, index) => (
+                <CartItem
+                  setTotalGrandAmount={setTotalGrandAmount}
+                  cartItem={cartItem}
+                  cartItems={cartItems}
+                  setCartItems={setCartItems}
+                  key={index}
+                  index={index}
+                />
+              ))}
+              <Button
+                startIcon={<AddIcon />}
+                variant="contained"
+                sx={{ mt: 3 }}
+                onClick={handleAddItem}
+              >
+                Add Item
+              </Button>
+            </Box>
+
+            {/* Section 3: Notes */}
+            <Box sx={{ mt: 3 }}>
+              <Controller
+                name="invoiceNotes"
+                control={control}
+                render={({ field }) => (
+                  <InputField
+                    {...field}
+                    label="Invoice Notes"
                     fullWidth
-                    type="date"
-                    required
-                    defaultValue={`${new Date().getFullYear()}-${(new Date().getMonth() + 1) < 10 ? `0${new Date().getMonth() + 1}` : (new Date().getMonth() + 1)}-${new Date().getDate()}`}
-                    />
-                </Box>
-              </Box>
-              {/* 📦 Section 1 end */}
-
-              {/* 📦 Section 2 start */}
-              <Box>
-                <Box>
-                  {
-                    cartItems.map((cartItem, index) => (
-                      <CartItem setTotalGrandAmount={setTotalGrandAmount} cartItem={cartItem} cartItems={cartItems} setCartItems={setCartItems} key={index} index={index}/>
-                    ))
-                  }
-                </Box>              
-                <Box className="mt-[30px]">
-                    <Button type='submit' startIcon={<AddIcon />} variant='contained'>Add Item</Button>
-                </Box>
-              </Box>
-              {/* 📦 Section 2 end */}
-
-              <Box className="mt-[20px] pb-[60px] flex justify-between">
-                <Box className="w-full mr-10">
-                  <InputField label="Invoice Notes" defaultValue={'Thank You ♥️ Come Again'} multiline rows={2} fullWidth/>
-                </Box>
-                {/* <Box>
-                  <Box className="flex justify-between items-center w-[280px]">
-                    <Box className="font-semibold">Subtotal</Box>
-                    <Box className="font-semibold">${totalGrandAmount}</Box>
-                  </Box>
-                  <Box className="flex justify-between items-center w-[280px] mt-[22px]">
-                    <Box className="font-semibold">Balance Due</Box>
-                    <Box className="font-bold text-[24px]">${totalGrandAmount-paid}</Box>
-                  </Box>
-                </Box> */}
-              </Box>
-
+                    multiline
+                    rows={2}
+                  />
+                )}
+              />
             </Box>
           </Paper>
-        </Box>
-        {/* Content Section end */}
+        </Grid>
 
-        {/* Side Section start */}
-        <Box className="col-span-1">
-          <Paper className='border-t-[5px] border-blue-500'>
-            <Box className="flex flex-col gap-[18px] py-[18px] px-[20px]">
-              <Paper elevation={0} className='border px-4 py-2 font-semibold'>
-                <Box className="flex justify-between items-center">
-                  <Box>Total Amount</Box>
-                  <Box>${totalGrandAmount}</Box>
+        {/* Sidebar Section */}
+        <Grid item xs={12} md={4}>
+          <Paper
+            elevation={3}
+            sx={{
+              p: 3,
+              borderRadius: 2,
+              background: "#f9f9f9",
+            }}
+          >
+            <Box>
+              <Paper
+                elevation={0}
+                sx={{
+                  border: "1px solid #ddd",
+                  p: 2,
+                  mb: 2,
+                  background: "#fff",
+                }}
+              >
+                <Box
+                  sx={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    mb: 1,
+                  }}
+                >
+                  <Typography variant="body1">Total Amount</Typography>
+                  <Typography variant="body1">$ :{totalGrandAmount}</Typography>
                 </Box>
-                <Box className="flex justify-between items-center mt-2">
-                  <Box>Balance Due</Box>
-                  <Box>${totalGrandAmount-paid-discount}</Box>
-                </Box>
+                {/* Display total in words */}
+                <Typography variant="body2" sx={{ fontStyle: "italic" }}>
+                  In words: {totalInWords} Only
+                </Typography>
               </Paper>
-              <InputField type="number" onChange={handlePaidChange} label="Paid Amount" fullWidth/>            
-              <InputField type="number" onChange={handleDiscountChange} label="Discount" fullWidth/>      
 
               {/* Print Functionality */}
-              <PrintTest />
+              <Button
+                variant="contained"
+                type="submit"
+                fullWidth
+                startIcon={<PrintTest />}
+                sx={{ mt: 2 }}
+              ></Button>
 
-                 
-              <Button variant='outlined' type='submit' fullWidth startIcon={<SaveIcon />}>Save</Button>
+              {/* Save Button */}
+              <Button
+                variant="contained"
+                type="submit"
+                fullWidth
+                startIcon={<SaveIcon />}
+                sx={{ mt: 2 }}
+              >
+                Save
+              </Button>
             </Box>
-            <Box className="w-full h-[2px] bg-gray-100"/>
-            <Box className="px-[20px] py-[18px]">
-              <Box className="flex justify-between items-center border px-[14px] py-[10px] rounded">
-                <Box>Status</Box>
-                <Button variant='outlined' size='small' color={`${totalGrandAmount == (paid+discount) ? 'success' : 'error'}`}>{totalGrandAmount == (paid+discount) ? 'Paid': 'Due'}</Button>
-              </Box>
-            </Box>
+
+            {/* Divider */}
+            <Divider sx={{ my: 2 }} />
           </Paper>
-        </Box>
-        {/* Side Section end */}
-        </Box>
+        </Grid>
+      </Grid>
     </form>
-  )
+  );
 }
