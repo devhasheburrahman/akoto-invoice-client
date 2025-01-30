@@ -32,7 +32,7 @@ const validationSchema = yup.object().shape({
 
 export default function AddInvoice() {
   const [cartItems, setCartItems] = useState<any[]>([
-    { item: "", price: 0, quantity: 1, description: "", removed: false },
+    { item: "", price: 0, quantity: 1, description: "" },
   ]);
   const componentRef = useRef<HTMLDivElement | null>(null);
   const [totalGrandAmount, setTotalGrandAmount] = useState(0);
@@ -59,7 +59,7 @@ export default function AddInvoice() {
   const handleAddItem = () => {
     setCartItems([
       ...cartItems,
-      { item: "", price: 0, quantity: 1, description: "", removed: false },
+      { item: "", price: 0, quantity: 1, description: "" },
     ]);
   };
   const onSubmit = (data: any) => {
@@ -73,7 +73,7 @@ export default function AddInvoice() {
   };
 
   const handlePrint = useReactToPrint({
-    content: () => componentRef.current as HTMLDivElement, 
+    content: () => componentRef.current as HTMLDivElement,
   });
 
   const PrintableComponent = React.forwardRef<
@@ -298,7 +298,11 @@ export default function AddInvoice() {
                   <Typography variant="body1">$ :{totalGrandAmount}</Typography>
                 </Box>
                 {/* Display total in words */}
-                <Typography variant="body2" sx={{ fontStyle: "italic" }}>
+                <Typography
+                  variant="body2"
+                  className="capitalize"
+                  sx={{ fontStyle: "italic" }}
+                >
                   In words: {totalInWords} Only
                 </Typography>
               </Paper>
