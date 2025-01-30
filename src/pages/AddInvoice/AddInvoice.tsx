@@ -1,31 +1,32 @@
 import { yupResolver } from "@hookform/resolvers/yup";
 import AddIcon from "@mui/icons-material/Add";
+import PrintIcon from "@mui/icons-material/Print";
 import SaveIcon from "@mui/icons-material/Save";
-import {
-  Box,
-  Button,
-  Divider,
-  Grid,
-  Paper,
-  Typography,
-  useTheme,
-} from "@mui/material";
+import { Box, Button, Grid, Paper, Typography, useTheme } from "@mui/material";
 import { toWords } from "number-to-words"; // Import the library
-import { useState } from "react";
+import React, { useRef, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
+import { useReactToPrint } from "react-to-print";
 import * as yup from "yup";
 import InputField from "../../components/InputFields/InputField";
+import Invoices1 from "../../components/Invoices/Invoices1";
 import CartItem from "./CartItem";
-import PrintTest from "./PrintTest";
+
+type PrintableComponentProps = {
+  data: any;
+};
 
 // Validation schema
 const validationSchema = yup.object().shape({
   checkNo: yup.string(),
   bankName: yup.string(),
   address: yup.string(),
+  date: yup
+    .string()
+    .matches(/^\d{4}-\d{2}-\d{2}$/, "Invalid date format, should be YYYY-MM-DD")
+    .required("Date is required"),
   billTo: yup.string().required("Bill To is required"),
   invoiceNumber: yup.string().required("Invoice Number is required"),
-  date: yup.date(),
   invoiceNotes: yup.string(),
 });
 
@@ -33,6 +34,7 @@ export default function AddInvoice() {
   const [cartItems, setCartItems] = useState<any[]>([
     { item: "", price: 0, quantity: 1, description: "", removed: false },
   ]);
+  const componentRef = useRef<HTMLDivElement | null>(null);
   const [totalGrandAmount, setTotalGrandAmount] = useState(0);
   const theme = useTheme();
   const totalInWords = toWords(totalGrandAmount);
@@ -40,6 +42,7 @@ export default function AddInvoice() {
   const {
     handleSubmit,
     control,
+    getValues,
     setValue,
     formState: { errors },
   } = useForm({
@@ -49,6 +52,7 @@ export default function AddInvoice() {
       billTo: "",
       invoiceNumber: "ABT1",
       invoiceNotes: "Powered by Shohoj Software",
+      date: new Date().toISOString().split("T")[0],
     },
   });
 
@@ -61,20 +65,41 @@ export default function AddInvoice() {
   const onSubmit = (data: any) => {
     console.log({
       ...data,
+
       cartItems: cartItems,
       totalGrandAmount: totalGrandAmount,
       totalInWords: totalInWords,
     });
-    
-    // console.log("Cart Items:", cartItems);
-    // console.log("Total Grand Amount:", totalGrandAmount);
-    // Logic to save the invoice
   };
 
-  // Convert totalGrandAmount to words
+  const handlePrint = useReactToPrint({
+    content: () => componentRef.current as HTMLDivElement, 
+  });
+
+  const PrintableComponent = React.forwardRef<
+    HTMLDivElement,
+    PrintableComponentProps
+  >((props, ref) => {
+    const { data } = props;
+    return (
+      <div ref={ref} className="hidden print:block">
+        <Invoices1 data={data} />
+      </div>
+    );
+  });
+
+  const collectedData = {
+    ...getValues(),
+    cartItems: cartItems,
+    totalGrandAmount: totalGrandAmount,
+    totalInWords: totalInWords,
+  };
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
+      <div className="absolute -right-[1000px]">
+        <PrintableComponent ref={componentRef} data={collectedData} />
+      </div>
       {/* Header Section */}
       <Box
         sx={{
@@ -283,9 +308,12 @@ export default function AddInvoice() {
                 variant="contained"
                 type="submit"
                 fullWidth
-                startIcon={<PrintTest />}
                 sx={{ mt: 2 }}
-              ></Button>
+                onClick={handlePrint}
+                startIcon={<PrintIcon />}
+              >
+                Print
+              </Button>
 
               {/* Save Button */}
               <Button
@@ -300,7 +328,6 @@ export default function AddInvoice() {
             </Box>
 
             {/* Divider */}
-            <Divider sx={{ my: 2 }} />
           </Paper>
         </Grid>
       </Grid>

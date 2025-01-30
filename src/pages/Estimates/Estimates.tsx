@@ -6,7 +6,7 @@ export default function Estimates() {
   return (
     <Box>
       <Box>Estimates</Box>
-      <Invoices1 />
+      {/* <Invoices1 data={data}/> */}
 
       
     </Box>
