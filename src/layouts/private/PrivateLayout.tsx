@@ -1,11 +1,22 @@
 import { Box, Paper } from "@mui/material";
-import { Outlet } from "react-router-dom";
+import { useEffect } from "react";
+import { Outlet, useNavigate } from "react-router-dom";
 import Appbar from "./components/Appbar";
 import Sidebar from "./components/Sidebar";
 
 type ComponentProps = {};
 
 export default function PrivateLayout({}: ComponentProps) {
+  const navigate = useNavigate();
+
+  // Check if user is authenticated
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      // Redirect to login if no token is found
+      navigate("/auth/login");
+    }
+  }, [navigate]);
   return (
     <Box>
       {/* Appbar */}
