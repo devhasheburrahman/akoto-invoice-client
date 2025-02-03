@@ -46,11 +46,11 @@ export default function Dashboard() {
       }
     })();
   }, []);
-  
+
   return (
     <Box>
       {/* card  */}
-      <Box className="my-2 font-bold"> Dashboard</Box>
+      <Box className="my-2 font-bold">Dashboard</Box>
       <Box className="grid grid-cols-4 gap-[33px]">
         <Box className="bg-[#50D27E] col-span-1 rounded-[10px]">
           <DashBoardCard date="Total" balance={100000} />
