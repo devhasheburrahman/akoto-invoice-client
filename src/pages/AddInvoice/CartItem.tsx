@@ -34,8 +34,6 @@ export default function CartItem({
 
   const handleRemove = (index: number) => {
     console.log(index);
-
-    // Mark the item as removed
     const updatedCartItems = cartItems.filter((_, i) => i !== index);
     console.log(updatedCartItems.includes(index));
     // Update the parent state
@@ -125,7 +123,7 @@ export default function CartItem({
           <Box className="min-w-[100px] py-[12px] pr-[20px] h-full flex flex-col justify-center">
             <Box className="flex justify-between items-center mt-2">
               <Box className="font-semibold">
-                = 
+                =
                 {parseInt(cartItem?.price || 0) *
                   parseInt(cartItem?.quantity || 0)}
                 TK

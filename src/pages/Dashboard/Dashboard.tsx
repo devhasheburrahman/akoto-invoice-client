@@ -3,6 +3,7 @@ import VisibilityIcon from "@mui/icons-material/Visibility";
 import {
   Box,
   Button,
+  CircularProgress,
   Paper,
   Table,
   TableBody,
@@ -11,10 +12,41 @@ import {
   TableHead,
 } from "@mui/material";
 import LinearProgress from "@mui/material/LinearProgress";
+import axios from "axios";
+import { useEffect, useState } from "react";
 import DashBoardCard from "../../components/DashBoardCard/DashBoardCard";
 import DonutChart from "../../components/PieChart/DonutChart";
+import { Base_Url } from "../../config/config";
+
+interface Invoice {
+  id: string;
+  amount: number;
+  date: string;
+  billTo: string;
+  totalGrandAmount: number;
+  status: string;
+  invoiceNumber: string;
+}
 
 export default function Dashboard() {
+  const [invoice, setInvoice] = useState<Invoice[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    (async () => {
+      try {
+        const result = await axios.get(`${Base_Url}/api/invoices/today`);
+        setInvoice(result.data.data);
+        console.log(result.data.data);
+      } catch (err: any) {
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    })();
+  }, []);
+  
   return (
     <Box>
       {/* card  */}
@@ -42,14 +74,11 @@ export default function Dashboard() {
               <Box>
                 <Box className="text-base">Total print</Box>
                 <Box className="text-black font-bold text-[22px]">
-                  {" "}
-                  <EventNoteIcon /> 30/100{" "}
+                  <EventNoteIcon /> 30/100
                 </Box>
               </Box>
               <Box>
-                {" "}
                 <Button variant="outlined" color="success">
-                  {" "}
                   Free Trail
                 </Button>
               </Box>
@@ -66,47 +95,50 @@ export default function Dashboard() {
           </Paper>
           {/*Recent Invoices  */}
           <Paper>
-            <Box className="w-full  mt-[44px] px-[22px] py-[25px]">
+            <Box className="w-full mt-[44px] px-[22px] py-[25px] flex flex-col items-center">
               <Box className="text-[18px] mb-[42px] font-semibold">
                 Recent Invoices
               </Box>
-              <TableContainer>
-                <Table aria-label="spanning table">
-                  <TableHead>
-                    <TableCell align="left">Customer Name.</TableCell>
-                    <TableCell align="left">Date</TableCell>
-                    <TableCell align="left">Total Amount</TableCell>
-                    <TableCell align="left">Due</TableCell>
-                  </TableHead>
-                  <TableBody>
-                    <TableCell align="left">Mr. Nimur Hasan</TableCell>
-                    <TableCell align="left">18/09/2023</TableCell>
-                    <TableCell align="left">100000</TableCell>
-                    <TableCell align="left">50,000</TableCell>
-                    <TableCell align="center">
-                      <VisibilityIcon />
-                    </TableCell>
-                  </TableBody>
-                  <TableBody>
-                    <TableCell align="left">Mr. Hashebur Rahman</TableCell>
-                    <TableCell align="left">18/09/2023</TableCell>
-                    <TableCell align="left">100000</TableCell>
-                    <TableCell align="left">500.00</TableCell>
-                    <TableCell align="center">
-                      <VisibilityIcon />
-                    </TableCell>
-                  </TableBody>
-                  <TableBody>
-                    <TableCell align="left">Programming agency</TableCell>
-                    <TableCell align="left">18/09/2023</TableCell>
-                    <TableCell align="left">100000</TableCell>
-                    <TableCell align="left">500.00</TableCell>
-                    <TableCell align="center">
-                      <VisibilityIcon />
-                    </TableCell>
-                  </TableBody>
-                </Table>
-              </TableContainer>
+
+              {loading ? (
+                <Box className="flex justify-center items-center w-full h-40">
+                  <CircularProgress />
+                </Box>
+              ) : error ? (
+                <Box className="text-red-500 font-semibold">Error: {error}</Box>
+              ) : invoice.length === 0 ? (
+                <Box className="text-gray-500 font-semibold">
+                  No invoices available
+                </Box>
+              ) : (
+                <TableContainer>
+                  <Table aria-label="spanning table">
+                    <TableHead>
+                      <TableCell align="left">Sl</TableCell>
+                      <TableCell align="left">Billing To</TableCell>
+                      <TableCell align="left">Total Amount</TableCell>
+                      <TableCell align="left">Invoice No</TableCell>
+                      <TableCell align="left">Status</TableCell>
+                      <TableCell align="center">Actions</TableCell>
+                    </TableHead>
+
+                    {invoice.map((item, index) => (
+                      <TableBody key={index}>
+                        <TableCell align="left">{index + 1}.</TableCell>
+                        <TableCell align="left">{item.billTo}</TableCell>
+                        <TableCell align="center">
+                          {item.totalGrandAmount}
+                        </TableCell>
+                        <TableCell align="left">{item.invoiceNumber}</TableCell>
+                        <TableCell align="left">{item.status}</TableCell>
+                        <TableCell align="center">
+                          <VisibilityIcon />
+                        </TableCell>
+                      </TableBody>
+                    ))}
+                  </Table>
+                </TableContainer>
+              )}
             </Box>
           </Paper>
         </Box>
@@ -121,7 +153,7 @@ export default function Dashboard() {
                 <Box className="flex py-2 justify-between">
                   <Box className="flex items-center  w-[50%] gap-2 ">
                     <Box className="h-4 w-4 rounded-full   bg-[#2152F8]"></Box>
-                    <Box className="text-[14px]  ">Today</Box>
+                    <Box className="text-[14px]">Today</Box>
                   </Box>
                   <Box className="flex items-center justify-center w-[50%] gap-2 ">
                     <Box className="h-4 w-4 rounded-full bg-[#50D27E]"></Box>

@@ -17,6 +17,7 @@
     "@types/react": "^18.2.22",
     "@types/react-dom": "^18.2.7",
     "apexcharts": "^3.42.0",
+    "axios": "^1.7.9",
     "chart.js": "^4.4.0",
     "number-to-words": "^1.2.4",
     "react": "^18.2.0",
