@@ -38,7 +38,7 @@ export default function Dashboard() {
       try {
         const result = await axios.get(`${Base_Url}/api/invoices/today`);
         setInvoice(result.data.data);
-        console.log(result.data.data);
+        
       } catch (err: any) {
         setError(err.message);
       } finally {

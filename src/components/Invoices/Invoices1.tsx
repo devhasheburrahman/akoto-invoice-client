@@ -100,9 +100,17 @@ export default function Invoices1({ ref, data }: ComponentProps) {
                     </TableCell>
                     <TableCell
                       align="center"
+                      width="100px"
                       sx={{ border: 1, borderColor: "grey.300" }}
                     >
-                      DR/CR NO
+                      Rate
+                    </TableCell>
+                    <TableCell
+                      align="center"
+                      width="100px"
+                      sx={{ border: 1, borderColor: "grey.300" }}
+                    >
+                      Qty
                     </TableCell>
                     <TableCell
                       align="center"
@@ -133,7 +141,13 @@ export default function Invoices1({ ref, data }: ComponentProps) {
                         align="center"
                         sx={{ border: 1, borderColor: "grey.300" }}
                       >
-                        {item.price} X {item.quantity}
+                        {item.price}
+                      </TableCell>
+                      <TableCell
+                        align="center"
+                        sx={{ border: 1, borderColor: "grey.300" }}
+                      >
+                        {item.quantity}
                       </TableCell>
                       <TableCell
                         align="center"
@@ -145,6 +159,10 @@ export default function Invoices1({ ref, data }: ComponentProps) {
                   ))}
 
                   <TableRow>
+                    <TableCell
+                      align="center"
+                      sx={{ border: 1, borderColor: "grey.300" }}
+                    ></TableCell>
                     <TableCell
                       align="center"
                       sx={{ border: 1, borderColor: "grey.300" }}

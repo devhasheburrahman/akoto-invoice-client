@@ -1,5 +1,5 @@
-import AddIcon from '@mui/icons-material/Add';
-import SearchIcon from '@mui/icons-material/Search';
+import AddIcon from "@mui/icons-material/Add";
+import SearchIcon from "@mui/icons-material/Search";
 import {
   Box,
   Button,
@@ -10,13 +10,12 @@ import {
   Paper,
   Select,
   SelectChangeEvent,
-  TextField,
   Typography,
 } from "@mui/material";
 import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import axios from "axios";
-import dayjs, { Dayjs } from "dayjs";
+import { Dayjs } from "dayjs";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import InvoiceCard from "../../components/EstimatesCard/InvoiceCard";
@@ -30,6 +29,8 @@ interface Invoices {
   totalGrandAmount: number;
   status: string;
   date: string;
+  invoiceNotes: string;
+  totalInWords: string;
 }
 
 export default function Invoice() {
@@ -42,14 +43,6 @@ export default function Invoice() {
   const [totalPages, setTotalPages] = useState<number>(1);
   const [filter, setFilter] = useState<string>("def");
   const [error, setError] = useState<string | null>(null);
-
-  const handleDateChange = (date: dayjs.Dayjs | null, dateString: string) => {
-    if (date && dayjs(date).isValid()) {
-      setSelectedDate(date); // Keep as Dayjs
-    } else {
-      setSelectedDate(null);
-    }
-  };
 
   useEffect(() => {
     fetchInvoices();
@@ -66,10 +59,11 @@ export default function Invoice() {
 
       const res = await axios.get(`${Base_Url}/api/invoices${query}`);
       setInvoices(res.data.data);
+      console.log(res.data.data);
       setTotalPages(res.data.totalPages);
     } catch (error) {
       console.error("Error fetching invoices:", error);
-      setError("Failed to fetch invoices. Please try again later.");
+      setError("No Data Available, Please try again another date");
     }
     setLoading(false);
   };
@@ -124,7 +118,7 @@ export default function Invoice() {
               label="Select Date"
               value={selectedDate}
               onChange={(newValue) => setSelectedDate(newValue)}
-             />
+            />
           </LocalizationProvider>
         </Paper>
 
@@ -142,13 +136,18 @@ export default function Invoice() {
             No invoices found.
           </Typography>
         ) : (
-          <Box className="mt-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+          <Box className="mt-8 grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
             {invoices.map((invoice) => (
               <InvoiceCard
                 key={invoice._id}
                 name={invoice.billTo}
                 due={invoice.totalGrandAmount}
                 total={invoice.totalGrandAmount}
+                invoiceNumber={invoice.invoiceNumber}
+                status={invoice.status}
+                invoiceNote={invoice.invoiceNotes}
+                totalAmountWork={invoice.totalInWords}
+                invoiceDate={invoice.date}
               />
             ))}
           </Box>
