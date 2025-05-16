@@ -1,6 +1,6 @@
+import DeleteIcon from '@mui/icons-material/Delete';
 import { Box, Paper } from "@mui/material";
 import React from "react";
-import DeleteIcon from '@mui/icons-material/Delete';
 import InputField from "../../components/InputFields/InputField";
 
 type ComponentProps = {
@@ -69,7 +69,7 @@ export default function CartItem({
           onClick={() => handleRemove(index)}
           className="absolute right-2 top-0 border-l border-b pl-1.5 cursor-pointer"
         >
-<DeleteIcon/>        </Box>
+<DeleteIcon/> </Box>
         <Box className="w-[42px] bg-[#F6F5FB] flex items-center justify-center text-[20px] font-bold">
           {index + 1}
         </Box>

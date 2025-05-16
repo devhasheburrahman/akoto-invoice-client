@@ -37,11 +37,15 @@ export default function Invoices1({ ref, data }: ComponentProps) {
           }}
         >
           {/* Header */}
-          <Typography variant="h5" align="center" gutterBottom>
-            AKOTA BANSREE TOWER
+          <Typography variant="h4" align="center" gutterBottom>
+            Nehal Real Estate Ltd
           </Typography>
           <Typography variant="subtitle1" align="center" gutterBottom>
-            BLock-N,Bansree Eastern Housing LTD.
+            House 106/26/A , Al Modina Sarok, West Nandipara, <br /> Khilgaon
+            Dhaka, 1219
+          </Typography>
+          <Typography variant="subtitle1" align="center" gutterBottom>
+            Mobile: 01726454961, 01600352585
           </Typography>
           <Typography variant="h6" align="center" gutterBottom>
             PAYMENT VOUCHER
